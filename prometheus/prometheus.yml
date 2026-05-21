@@ -1,0 +1,38 @@
+# ============================================================
+# PulseWat — Prometheus Configuration
+# ============================================================
+
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+  scrape_timeout: 4s
+
+# Alert manager (rules evaluated locally)
+rule_files:
+  - "alert.rules.yml"
+
+# ============================================================
+# Scrape Targets
+# ============================================================
+scrape_configs:
+
+  # Prometheus self-monitoring
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["prometheus:9090"]
+        labels:
+          instance: "pulsewat-prometheus"
+
+  # Host metrics via Node Exporter
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+        labels:
+          instance: "pulsewat-host"
+
+  # Container metrics via cAdvisor
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["cadvisor:8080"]
+        labels:
+          instance: "pulsewat-cadvisor"

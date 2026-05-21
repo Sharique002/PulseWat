@@ -1,0 +1,140 @@
+{
+  "description": "PulseWat — Docker container metrics via cAdvisor",
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {"h":1,"w":24,"x":0,"y":0},
+      "id": 200,
+      "title": "Container Overview",
+      "type": "row"
+    },
+    {
+      "datasource": {"type":"prometheus","uid":"prometheus"},
+      "fieldConfig": {"defaults":{"color":{"mode":"thresholds"},"thresholds":{"mode":"absolute","steps":[{"color":"#58a6ff","value":null}]},"unit":"none"}},
+      "gridPos": {"h":5,"w":6,"x":0,"y":1},
+      "id": 21,
+      "options": {"colorMode":"background_solid","graphMode":"none","reduceOptions":{"calcs":["lastNotNull"]},"textMode":"auto"},
+      "title": "Running Containers",
+      "type": "stat",
+      "targets": [{"expr":"count(container_last_seen{name!=\"\"})","refId":"A"}]
+    },
+    {
+      "datasource": {"type":"prometheus","uid":"prometheus"},
+      "fieldConfig": {"defaults":{"color":{"mode":"thresholds"},"thresholds":{"mode":"absolute","steps":[{"color":"#3fb950","value":null},{"color":"#d29922","value":50},{"color":"#f85149","value":80}]},"unit":"percent","min":0,"max":100}},
+      "gridPos": {"h":5,"w":6,"x":6,"y":1},
+      "id": 22,
+      "options": {"colorMode":"background_solid","graphMode":"area","reduceOptions":{"calcs":["lastNotNull"]},"textMode":"auto"},
+      "title": "Total Container CPU %",
+      "type": "stat",
+      "targets": [{"expr":"sum(rate(container_cpu_usage_seconds_total{name!=\"\"}[5m])) * 100","refId":"A"}]
+    },
+    {
+      "datasource": {"type":"prometheus","uid":"prometheus"},
+      "fieldConfig": {"defaults":{"color":{"mode":"thresholds"},"thresholds":{"mode":"absolute","steps":[{"color":"#a371f7","value":null}]},"unit":"bytes"}},
+      "gridPos": {"h":5,"w":6,"x":12,"y":1},
+      "id": 23,
+      "options": {"colorMode":"background_solid","graphMode":"area","reduceOptions":{"calcs":["lastNotNull"]},"textMode":"auto"},
+      "title": "Total Container Memory",
+      "type": "stat",
+      "targets": [{"expr":"sum(container_memory_usage_bytes{name!=\"\"})","refId":"A"}]
+    },
+    {
+      "datasource": {"type":"prometheus","uid":"prometheus"},
+      "fieldConfig": {"defaults":{"color":{"mode":"thresholds"},"thresholds":{"mode":"absolute","steps":[{"color":"#d29922","value":null}]},"unit":"Bps"}},
+      "gridPos": {"h":5,"w":6,"x":18,"y":1},
+      "id": 24,
+      "options": {"colorMode":"background_solid","graphMode":"area","reduceOptions":{"calcs":["lastNotNull"]},"textMode":"auto"},
+      "title": "Total Network RX",
+      "type": "stat",
+      "targets": [{"expr":"sum(rate(container_network_receive_bytes_total{name!=\"\"}[5m]))","refId":"A"}]
+    },
+    {
+      "collapsed": false,
+      "gridPos": {"h":1,"w":24,"x":0,"y":6},
+      "id": 201,
+      "title": "Container CPU Usage",
+      "type": "row"
+    },
+    {
+      "datasource": {"type":"prometheus","uid":"prometheus"},
+      "fieldConfig": {"defaults":{"color":{"mode":"palette-classic"},"custom":{"drawStyle":"line","fillOpacity":15,"gradientMode":"opacity","lineInterpolation":"smooth","lineWidth":2,"showPoints":"never","stacking":{"mode":"none"},"thresholdsStyle":{"mode":"off"}},"unit":"percent"}},
+      "gridPos": {"h":8,"w":24,"x":0,"y":7},
+      "id": 25,
+      "options": {"legend":{"calcs":["mean","max"],"displayMode":"table","placement":"right"},"tooltip":{"mode":"multi","sort":"desc"}},
+      "title": "CPU Usage per Container",
+      "type": "timeseries",
+      "targets": [{"expr":"rate(container_cpu_usage_seconds_total{name!=\"\"}[5m]) * 100","legendFormat":"{{name}}","refId":"A"}]
+    },
+    {
+      "collapsed": false,
+      "gridPos": {"h":1,"w":24,"x":0,"y":15},
+      "id": 202,
+      "title": "Container Memory Usage",
+      "type": "row"
+    },
+    {
+      "datasource": {"type":"prometheus","uid":"prometheus"},
+      "fieldConfig": {"defaults":{"color":{"mode":"palette-classic"},"custom":{"drawStyle":"line","fillOpacity":15,"gradientMode":"opacity","lineInterpolation":"smooth","lineWidth":2,"showPoints":"never","stacking":{"mode":"none"},"thresholdsStyle":{"mode":"off"}},"unit":"bytes"}},
+      "gridPos": {"h":8,"w":24,"x":0,"y":16},
+      "id": 26,
+      "options": {"legend":{"calcs":["mean","max"],"displayMode":"table","placement":"right"},"tooltip":{"mode":"multi","sort":"desc"}},
+      "title": "Memory Usage per Container",
+      "type": "timeseries",
+      "targets": [{"expr":"container_memory_usage_bytes{name!=\"\"}","legendFormat":"{{name}}","refId":"A"}]
+    },
+    {
+      "collapsed": false,
+      "gridPos": {"h":1,"w":24,"x":0,"y":24},
+      "id": 203,
+      "title": "Container Network I/O",
+      "type": "row"
+    },
+    {
+      "datasource": {"type":"prometheus","uid":"prometheus"},
+      "fieldConfig": {"defaults":{"color":{"mode":"palette-classic"},"custom":{"drawStyle":"line","fillOpacity":10,"gradientMode":"opacity","lineInterpolation":"smooth","lineWidth":2,"showPoints":"never","stacking":{"mode":"none"},"thresholdsStyle":{"mode":"off"}},"unit":"Bps"}},
+      "gridPos": {"h":8,"w":12,"x":0,"y":25},
+      "id": 27,
+      "options": {"legend":{"calcs":["mean","max"],"displayMode":"table","placement":"bottom"},"tooltip":{"mode":"multi","sort":"desc"}},
+      "title": "Network Receive per Container",
+      "type": "timeseries",
+      "targets": [{"expr":"rate(container_network_receive_bytes_total{name!=\"\"}[5m])","legendFormat":"{{name}}","refId":"A"}]
+    },
+    {
+      "datasource": {"type":"prometheus","uid":"prometheus"},
+      "fieldConfig": {"defaults":{"color":{"mode":"palette-classic"},"custom":{"drawStyle":"line","fillOpacity":10,"gradientMode":"opacity","lineInterpolation":"smooth","lineWidth":2,"showPoints":"never","stacking":{"mode":"none"},"thresholdsStyle":{"mode":"off"}},"unit":"Bps"}},
+      "gridPos": {"h":8,"w":12,"x":12,"y":25},
+      "id": 28,
+      "options": {"legend":{"calcs":["mean","max"],"displayMode":"table","placement":"bottom"},"tooltip":{"mode":"multi","sort":"desc"}},
+      "title": "Network Transmit per Container",
+      "type": "timeseries",
+      "targets": [{"expr":"rate(container_network_transmit_bytes_total{name!=\"\"}[5m])","legendFormat":"{{name}}","refId":"A"}]
+    },
+    {
+      "collapsed": false,
+      "gridPos": {"h":1,"w":24,"x":0,"y":33},
+      "id": 204,
+      "title": "Container Details",
+      "type": "row"
+    },
+    {
+      "datasource": {"type":"prometheus","uid":"prometheus"},
+      "fieldConfig": {"defaults":{"color":{"mode":"thresholds"},"custom":{"align":"auto","cellOptions":{"type":"auto"}},"thresholds":{"mode":"absolute","steps":[{"color":"green","value":null}]}},"overrides":[{"matcher":{"id":"byName","options":"Value #A"},"properties":[{"id":"displayName","value":"CPU %"},{"id":"unit","value":"percent"},{"id":"custom.cellOptions","value":{"mode":"gradient","type":"gauge"}}]},{"matcher":{"id":"byName","options":"Value #B"},"properties":[{"id":"displayName","value":"Memory"},{"id":"unit","value":"bytes"}]}]},
+      "gridPos": {"h":8,"w":24,"x":0,"y":34},
+      "id": 29,
+      "options": {"cellHeight":"sm","showHeader":true,"sortBy":[{"desc":true,"displayName":"CPU %"}]},
+      "title": "Container Resource Table",
+      "type": "table",
+      "targets": [{"expr":"rate(container_cpu_usage_seconds_total{name!=\"\"}[5m]) * 100","format":"table","instant":true,"refId":"A"},{"expr":"container_memory_usage_bytes{name!=\"\"}","format":"table","instant":true,"refId":"B"}],
+      "transformations": [{"id":"merge"},{"id":"filterFieldsByName","options":{"include":{"pattern":"name|Value.*"}}},{"id":"organize","options":{"renameByName":{"name":"Container"}}}]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["pulsewat","docker","cadvisor"],
+  "time": {"from":"now-1h","to":"now"},
+  "title": "Docker Container Monitoring",
+  "uid": "pulsewat-docker",
+  "version": 1,
+  "refresh": "5s"
+}

@@ -1,0 +1,132 @@
+# ============================================================
+# PulseWat — Infrastructure Monitoring Platform
+# "Monitor the pulse of your infrastructure."
+# ============================================================
+# Usage:  docker compose up -d
+# Ports:  Grafana=3000  Prometheus=9090  cAdvisor=8081
+# ============================================================
+
+services:
+  # ----------------------------------------------------------
+  # Prometheus — Metrics Collection Engine
+  # ----------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: pulsewat-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--web.enable-lifecycle"
+    networks:
+      - pulsewat
+
+  # ----------------------------------------------------------
+  # Grafana — Visualization & Dashboards
+  # ----------------------------------------------------------
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: pulsewat-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=pulsewat
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_INSTALL_PLUGINS=
+      # Theme & Branding
+      - GF_USERS_DEFAULT_THEME=dark
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/infrastructure-overview.json
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - pulsewat
+
+  # ----------------------------------------------------------
+  # Node Exporter — Host-Level Metrics
+  # ----------------------------------------------------------
+  node-exporter:
+    image: prom/node-exporter:v1.8.1
+    container_name: pulsewat-node-exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.rootfs=/rootfs"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+    networks:
+      - pulsewat
+
+  # ----------------------------------------------------------
+  # cAdvisor — Container-Level Metrics
+  # ----------------------------------------------------------
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: pulsewat-cadvisor
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    networks:
+      - pulsewat
+
+  # ----------------------------------------------------------
+  # Sample App — Nginx (Monitored Service)
+  # ----------------------------------------------------------
+  sample-app:
+    build:
+      context: ./sample-app
+      dockerfile: Dockerfile
+    container_name: pulsewat-sample-app
+    restart: unless-stopped
+    ports:
+      - "8888:80"
+    networks:
+      - pulsewat
+
+# ============================================================
+# Volumes — Persistent Storage
+# ============================================================
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+# ============================================================
+# Networks
+# ============================================================
+networks:
+  pulsewat:
+    driver: bridge
+    name: pulsewat-network

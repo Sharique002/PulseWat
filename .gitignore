@@ -1,0 +1,18 @@
+# Volumes & data
+prometheus_data/
+grafana_data/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temp
+*.tmp
+*.log
