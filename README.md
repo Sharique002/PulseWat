@@ -24,7 +24,7 @@ Once the stack is running, you can access the following endpoints:
 
 | Service | Access URL | Port (Host:Container) | Credentials / Details |
 | :--- | :--- | :--- | :--- |
-| **Grafana** | [http://localhost:3000](http://localhost:3000) | `3000:3000` | User: `admin` / Password: `pulsewat` |
+| **Grafana** | [http://localhost:3001](http://localhost:3001) | `3001:3000` | User: `admin` / Password: `pulsewat` |
 | **Prometheus** | [http://localhost:9090](http://localhost:9090) | `9090:9090` | Alerting & metric querying engine |
 | **cAdvisor** | [http://localhost:8081](http://localhost:8081) | `8081:8080` | Container resource analytics |
 | **Sample App** | [http://localhost:8888](http://localhost:8888) | `8888:80` | Simple Nginx website (monitored target) |
