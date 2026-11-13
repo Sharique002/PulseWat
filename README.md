@@ -119,9 +119,6 @@ PulseWat/
 │   ├── nginx.conf                  # Nginx stub_status configuration
 │   └── index.html                  # Simple dark-themed landing page
 └── README.md                       # Documentation
-```
-
----
 
 ## 🛠️ Management Commands
 
